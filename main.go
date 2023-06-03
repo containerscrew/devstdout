@@ -8,9 +8,7 @@ import (
 var appEnv = os.Getenv("APP_ENV")
 
 func main() {
-	opts := logger.WithOptions("debug", true)
-
-	log := logger.NewLogger(opts)
+	log := logger.NewLogger("trace", "prod", true)
 
 	log.Logger.Debug(
 		"executing database query",
@@ -18,6 +16,4 @@ func main() {
 	)
 	log.Logger.Info("image upload successful", logger.PrintString("image_id", "39ud88"))
 	log.Success("Success Message")
-	// Me encantaría implementar este método jejejejejejejeejejejeje
-	//log.Logger.Success()
 }

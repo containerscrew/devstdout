@@ -17,6 +17,8 @@ const (
 
 type CustomLogger struct {
 	Logger *slog.Logger
+	opts   *slog.HandlerOptions
+	ctx    context.Context
 }
 
 var LevelNames = map[slog.Leveler]string{
@@ -42,29 +44,27 @@ func PrintInt(key string, value int) any {
 	return slog.Int(key, value)
 }
 
-func WithOptions(level string, addSource bool) PrettyHandlerOptions {
-	return PrettyHandlerOptions{
-		SlogOpts: slog.HandlerOptions{
-			Level:     LevelTrace,
-			AddSource: addSource,
-			ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
-				if a.Key == slog.LevelKey {
-					level := a.Value.Any().(slog.Level)
-					levelLabel, exists := LevelNames[level]
-					if !exists {
-						levelLabel = level.String()
-					}
-
-					a.Value = slog.StringValue(levelLabel)
+func (c *CustomLogger) withOptions(level string, addSource bool) {
+	c.opts = &slog.HandlerOptions{
+		Level:     LevelTrace,
+		AddSource: addSource,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.LevelKey {
+				level := a.Value.Any().(slog.Level)
+				levelLabel, exists := LevelNames[level]
+				if !exists {
+					levelLabel = level.String()
 				}
-				return a
-			},
+
+				a.Value = slog.StringValue(levelLabel)
+			}
+			return a
 		},
 	}
 }
 
-func (h *PrettyHandler) Handle(ctx context.Context, r slog.Record) error {
-	level := r.Level.String() + ":"
+func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
+	level := r.Level.String()
 
 	switch r.Level {
 	case slog.LevelDebug:
@@ -76,13 +76,12 @@ func (h *PrettyHandler) Handle(ctx context.Context, r slog.Record) error {
 	case slog.LevelError:
 		level = color.RedString(level)
 	case LevelSuccess:
-		level = color.GreenString(level)
+		level = color.GreenString(LevelNames[LevelSuccess])
 	}
 
 	fields := make(map[string]interface{}, r.NumAttrs())
 	r.Attrs(func(a slog.Attr) bool {
 		fields[a.Key] = a.Value.Any()
-
 		return true
 	})
 
@@ -100,20 +99,27 @@ func (h *PrettyHandler) Handle(ctx context.Context, r slog.Record) error {
 	return nil
 }
 
-func NewPrettyHandler(out io.Writer, opts PrettyHandlerOptions) *PrettyHandler {
+func NewPrettyHandler(out io.Writer, opts *slog.HandlerOptions) *PrettyHandler {
 	h := &PrettyHandler{
-		Handler: slog.NewJSONHandler(out, &opts.SlogOpts),
+		Handler: slog.NewJSONHandler(out, opts),
+		l:       log.New(out, "", 0),
 	}
 
 	return h
 }
 
-func NewLogger(p PrettyHandlerOptions) *CustomLogger {
-	handler := NewPrettyHandler(os.Stdout, p)
-	return &CustomLogger{Logger: slog.New(handler)}
+func NewLogger(level, env string, addSource bool) *CustomLogger {
+	c := &CustomLogger{ctx: context.Background()}
+	c.withOptions(level, addSource)
+	c.Logger = slog.New(NewPrettyHandler(os.Stdout, c.opts))
+
+	if env == "prod" {
+		c.Logger = slog.New(slog.NewJSONHandler(os.Stdout, c.opts))
+	}
+
+	return c
 }
 
 func (c *CustomLogger) Success(msg string) {
-	ctx := context.Background()
-	c.Logger.Log(ctx, LevelSuccess, msg)
+	c.Logger.Log(c.ctx, LevelSuccess, msg)
 }

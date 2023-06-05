@@ -8,12 +8,16 @@ import (
 var appEnv = os.Getenv("APP_ENV")
 
 func main() {
-	log := logger.NewLogger("trace", "prod", true)
+	log := logger.NewLogger(
+		logger.OptionsLogger{Level: "trace", AddSource: true},
+		"prod",
+	)
 
 	log.Logger.Debug(
 		"executing database query",
-		logger.PrintString("query", "SELECT * FROM users"),
+		logger.PrintMessage("query", "SELECT * FROM users"),
 	)
-	log.Logger.Info("image upload successful", logger.PrintString("image_id", "39ud88"))
+	log.Logger.Info("image upload successful", logger.PrintMessage("image_id", "39ud88"))
+	log.Logger.Info("image upload successful", logger.PrintMessage("image_id", 9876544))
 	log.Success("Success Message")
 }

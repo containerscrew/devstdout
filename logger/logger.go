@@ -15,10 +15,16 @@ const (
 	LevelSuccess = slog.Level(6)
 )
 
+type OptionsLogger struct {
+	Level     string
+	AddSource bool
+}
+
 type CustomLogger struct {
-	Logger *slog.Logger
-	opts   *slog.HandlerOptions
-	ctx    context.Context
+	Logger  *slog.Logger
+	opts    *slog.HandlerOptions
+	ctx     context.Context
+	options OptionsLogger
 }
 
 var LevelNames = map[slog.Leveler]string{
@@ -35,19 +41,25 @@ type PrettyHandler struct {
 	l *log.Logger
 }
 
-// Mirar generics tete
-func PrintString(key, value string) any {
-	return slog.String(key, value)
+type LogMessageType interface {
+	int | int64 | float64 | string
 }
 
-func PrintInt(key string, value int) any {
-	return slog.Int(key, value)
+func PrintMessage[T LogMessageType](key string, value T) any {
+	switch any(value).(type) {
+	case int:
+		return slog.Int(key, any(value).(int))
+	case string:
+		return slog.String(key, any(value).(string))
+	default:
+		return nil
+	}
 }
 
-func (c *CustomLogger) withOptions(level string, addSource bool) {
+func (c *CustomLogger) withOptions() {
 	c.opts = &slog.HandlerOptions{
 		Level:     LevelTrace,
-		AddSource: addSource,
+		AddSource: c.options.AddSource,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			if a.Key == slog.LevelKey {
 				level := a.Value.Any().(slog.Level)
@@ -108,9 +120,9 @@ func NewPrettyHandler(out io.Writer, opts *slog.HandlerOptions) *PrettyHandler {
 	return h
 }
 
-func NewLogger(level, env string, addSource bool) *CustomLogger {
-	c := &CustomLogger{ctx: context.Background()}
-	c.withOptions(level, addSource)
+func NewLogger(options OptionsLogger, env string) *CustomLogger {
+	c := &CustomLogger{ctx: context.Background(), options: options}
+	c.withOptions()
 	c.Logger = slog.New(NewPrettyHandler(os.Stdout, c.opts))
 
 	if env == "prod" {

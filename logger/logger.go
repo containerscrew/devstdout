@@ -48,8 +48,10 @@ func getLevel(l string) slog.Level {
 	switch strings.ToUpper(l) {
 	case "SUCCESS":
 		return LevelSuccess
-	default:
+	case "TRACE":
 		return LevelTrace
+	default:
+		return slog.LevelInfo
 	}
 }
 
@@ -84,6 +86,6 @@ func NewLogger(options OptionsLogger, env string) *CustomLogger {
 	return c
 }
 
-func (c *CustomLogger) Success(msg string) {
-	c.Logger.Log(c.ctx, LevelSuccess, msg)
+func (c *CustomLogger) Success(msg string, args ...any) {
+	c.Logger.Log(c.ctx, LevelSuccess, msg, args...)
 }

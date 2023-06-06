@@ -9,15 +9,24 @@ var appEnv = os.Getenv("APP_ENV")
 
 func main() {
 	log := logger.NewLogger(
-		logger.OptionsLogger{Level: "success", AddSource: true},
-		"prod",
+		logger.OptionsLogger{Level: "trace", AddSource: true},
+		appEnv,
 	)
 
 	log.Logger.Debug(
 		"executing database query",
 		logger.PrintMessage("query", "SELECT * FROM users"),
 	)
-	log.Logger.Info("image upload successful", logger.PrintMessage("image_id", "39ud88"))
-	log.Logger.Info("image upload successful", logger.PrintMessage("image_id", 9876544))
-	log.Success("Success Message")
+	log.Logger.Info(
+		"image upload successful",
+		logger.PrintMessage("image_id", "39ud88"),
+	)
+	log.Logger.Info(
+		"image upload successful",
+		logger.PrintMessage("process_id", 9876544),
+	)
+	log.Success(
+		"Success Message",
+		logger.PrintMessage("internal_id", "34fces"),
+	)
 }

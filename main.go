@@ -9,7 +9,7 @@ var appEnv = os.Getenv("APP_ENV")
 
 func main() {
 	log := logger.NewLogger(
-		logger.OptionsLogger{Level: "trace", AddSource: true},
+		logger.OptionsLogger{Level: "success", AddSource: true},
 		"prod",
 	)
 

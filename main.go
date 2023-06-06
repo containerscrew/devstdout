@@ -13,15 +13,15 @@ func main() {
 		appEnv,
 	)
 
-	log.Logger.Debug(
+	log.Debug(
 		"executing database query",
 		logger.PrintMessage("query", "SELECT * FROM users"),
 	)
-	log.Logger.Info(
+	log.Info(
 		"image upload successful",
 		logger.PrintMessage("image_id", "39ud88"),
 	)
-	log.Logger.Info(
+	log.Info(
 		"image upload successful",
 		logger.PrintMessage("process_id", 9876544),
 	)

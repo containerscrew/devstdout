@@ -18,7 +18,7 @@ type OptionsLogger struct {
 }
 
 type CustomLogger struct {
-	Logger  *slog.Logger
+	logger  *slog.Logger
 	opts    *slog.HandlerOptions
 	ctx     context.Context
 	options OptionsLogger
@@ -77,15 +77,23 @@ func (c *CustomLogger) withOptions() {
 func NewLogger(options OptionsLogger, env string) *CustomLogger {
 	c := &CustomLogger{ctx: context.Background(), options: options}
 	c.withOptions()
-	c.Logger = slog.New(newPrettyHandler(os.Stdout, c.opts))
+	c.logger = slog.New(newPrettyHandler(os.Stdout, c.opts))
 
 	if env == "prod" {
-		c.Logger = slog.New(slog.NewJSONHandler(os.Stdout, c.opts))
+		c.logger = slog.New(slog.NewJSONHandler(os.Stdout, c.opts))
 	}
 
 	return c
 }
 
 func (c *CustomLogger) Success(msg string, args ...any) {
-	c.Logger.Log(c.ctx, LevelSuccess, msg, args...)
+	c.logger.Log(c.ctx, LevelSuccess, msg, args...)
+}
+
+func (c *CustomLogger) Debug(msg string, args ...any) {
+	c.logger.Log(c.ctx, slog.LevelDebug, msg, args...)
+}
+
+func (c *CustomLogger) Info(msg string, args ...any) {
+	c.logger.Log(c.ctx, slog.LevelInfo, msg, args...)
 }

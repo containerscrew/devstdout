@@ -78,13 +78,8 @@ func (c *CustomLogger) withOptions() {
 			return a
 		},
 	}
-}
 
-func NewLogger(options OptionsLogger) *CustomLogger {
-	c := &CustomLogger{ctx: context.Background(), options: options}
-	c.withOptions()
-
-	switch options.LoggerType {
+	switch c.options.LoggerType {
 	case "console":
 		c.logger = slog.New(slog.NewTextHandler(os.Stdout, c.opts))
 	case "pretty":
@@ -95,6 +90,11 @@ func NewLogger(options OptionsLogger) *CustomLogger {
 		// Default logger always json
 		c.logger = slog.New(slog.NewJSONHandler(os.Stdout, c.opts))
 	}
+}
+
+func NewLogger(options OptionsLogger) *CustomLogger {
+	c := &CustomLogger{ctx: context.Background(), options: options}
+	c.withOptions()
 
 	return c
 }

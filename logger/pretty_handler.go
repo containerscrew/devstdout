@@ -40,8 +40,8 @@ func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
 		return true
 	})
 
-	//b, err := json.MarshalIndent(fields, "", "  ")
-	data, err := json.Marshal(fields)
+	b, err := json.MarshalIndent(fields, "", "  ")
+	//data, err := json.Marshal(fields)
 	if err != nil {
 		return err
 	}
@@ -49,14 +49,14 @@ func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
 	timeStr := r.Time.Format("[15:05:05]")
 	msg := color.CyanString(r.Message)
 
-	h.l.Println(timeStr, level, msg, color.WhiteString(string(data)))
+	h.l.Println(timeStr, level, msg, color.WhiteString(string(b)))
 
 	return nil
 }
 
 func newPrettyHandler(out io.Writer, opts *slog.HandlerOptions) *PrettyHandler {
 	return &PrettyHandler{
-		Handler: slog.NewJSONHandler(out, opts),
+		Handler: slog.NewTextHandler(out, opts),
 		l:       log.New(out, "", 0),
 	}
 }

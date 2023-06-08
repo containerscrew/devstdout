@@ -13,8 +13,9 @@ const (
 )
 
 type OptionsLogger struct {
-	Level     string
-	AddSource bool
+	Level      string
+	AddSource  bool
+	LoggerType string
 }
 
 type CustomLogger struct {
@@ -48,6 +49,8 @@ func getLevel(l string) slog.Level {
 	switch strings.ToUpper(l) {
 	case "SUCCESS":
 		return LevelSuccess
+	case "WARNING":
+		return slog.LevelWarn
 	case "TRACE":
 		return LevelTrace
 	default:
@@ -74,12 +77,16 @@ func (c *CustomLogger) withOptions() {
 	}
 }
 
-func NewLogger(options OptionsLogger, env string) *CustomLogger {
+func NewLogger(options OptionsLogger) *CustomLogger {
 	c := &CustomLogger{ctx: context.Background(), options: options}
 	c.withOptions()
-	c.logger = slog.New(newPrettyHandler(os.Stdout, c.opts))
 
-	if env == "prod" {
+	switch options.LoggerType {
+	case "console":
+		c.logger = slog.New(slog.NewTextHandler(os.Stdout, c.opts))
+	case "pretty":
+		c.logger = slog.New(newPrettyHandler(os.Stdout, c.opts))
+	default:
 		c.logger = slog.New(slog.NewJSONHandler(os.Stdout, c.opts))
 	}
 

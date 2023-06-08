@@ -2,12 +2,9 @@ package logger
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/fatih/color"
 	"golang.org/x/exp/slog"
-	"io"
-	"log"
 	"os"
+	"strings"
 )
 
 const (
@@ -15,10 +12,17 @@ const (
 	LevelSuccess = slog.Level(6)
 )
 
+type OptionsLogger struct {
+	Level      string
+	AddSource  bool
+	LoggerType string
+}
+
 type CustomLogger struct {
-	Logger *slog.Logger
-	opts   *slog.HandlerOptions
-	ctx    context.Context
+	logger  *slog.Logger
+	opts    *slog.HandlerOptions
+	ctx     context.Context
+	options OptionsLogger
 }
 
 var LevelNames = map[slog.Leveler]string{
@@ -26,28 +30,38 @@ var LevelNames = map[slog.Leveler]string{
 	LevelSuccess: "SUCCESS",
 }
 
-type PrettyHandlerOptions struct {
-	SlogOpts slog.HandlerOptions
+type LogMessageType interface {
+	int | int64 | float64 | string
 }
 
-type PrettyHandler struct {
-	slog.Handler
-	l *log.Logger
+func PrintMessage[T LogMessageType](key string, value T) any {
+	switch any(value).(type) {
+	case int:
+		return slog.Int(key, any(value).(int))
+	case string:
+		return slog.String(key, any(value).(string))
+	default:
+		return nil
+	}
 }
 
-// Mirar generics tete
-func PrintString(key, value string) any {
-	return slog.String(key, value)
+func getLevel(l string) slog.Level {
+	switch strings.ToUpper(l) {
+	case "SUCCESS":
+		return LevelSuccess
+	case "WARNING":
+		return slog.LevelWarn
+	case "TRACE":
+		return LevelTrace
+	default:
+		return slog.LevelInfo
+	}
 }
 
-func PrintInt(key string, value int) any {
-	return slog.Int(key, value)
-}
-
-func (c *CustomLogger) withOptions(level string, addSource bool) {
+func (c *CustomLogger) withOptions() {
 	c.opts = &slog.HandlerOptions{
-		Level:     LevelTrace,
-		AddSource: addSource,
+		Level:     getLevel(c.options.Level),
+		AddSource: c.options.AddSource,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			if a.Key == slog.LevelKey {
 				level := a.Value.Any().(slog.Level)
@@ -63,63 +77,30 @@ func (c *CustomLogger) withOptions(level string, addSource bool) {
 	}
 }
 
-func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
-	level := r.Level.String()
+func NewLogger(options OptionsLogger) *CustomLogger {
+	c := &CustomLogger{ctx: context.Background(), options: options}
+	c.withOptions()
 
-	switch r.Level {
-	case slog.LevelDebug:
-		level = color.MagentaString(level)
-	case slog.LevelInfo:
-		level = color.BlueString(level)
-	case slog.LevelWarn:
-		level = color.YellowString(level)
-	case slog.LevelError:
-		level = color.RedString(level)
-	case LevelSuccess:
-		level = color.GreenString(LevelNames[LevelSuccess])
-	}
-
-	fields := make(map[string]interface{}, r.NumAttrs())
-	r.Attrs(func(a slog.Attr) bool {
-		fields[a.Key] = a.Value.Any()
-		return true
-	})
-
-	//b, err := json.MarshalIndent(fields, "", "  ")
-	data, err := json.Marshal(fields)
-	if err != nil {
-		return err
-	}
-
-	timeStr := r.Time.Format("[15:05:05]")
-	msg := color.CyanString(r.Message)
-
-	h.l.Println(timeStr, level, msg, color.WhiteString(string(data)))
-
-	return nil
-}
-
-func NewPrettyHandler(out io.Writer, opts *slog.HandlerOptions) *PrettyHandler {
-	h := &PrettyHandler{
-		Handler: slog.NewJSONHandler(out, opts),
-		l:       log.New(out, "", 0),
-	}
-
-	return h
-}
-
-func NewLogger(level, env string, addSource bool) *CustomLogger {
-	c := &CustomLogger{ctx: context.Background()}
-	c.withOptions(level, addSource)
-	c.Logger = slog.New(NewPrettyHandler(os.Stdout, c.opts))
-
-	if env == "prod" {
-		c.Logger = slog.New(slog.NewJSONHandler(os.Stdout, c.opts))
+	switch options.LoggerType {
+	case "console":
+		c.logger = slog.New(slog.NewTextHandler(os.Stdout, c.opts))
+	case "pretty":
+		c.logger = slog.New(newPrettyHandler(os.Stdout, c.opts))
+	default:
+		c.logger = slog.New(slog.NewJSONHandler(os.Stdout, c.opts))
 	}
 
 	return c
 }
 
-func (c *CustomLogger) Success(msg string) {
-	c.Logger.Log(c.ctx, LevelSuccess, msg)
+func (c *CustomLogger) Success(msg string, args ...any) {
+	c.logger.Log(c.ctx, LevelSuccess, msg, args...)
+}
+
+func (c *CustomLogger) Debug(msg string, args ...any) {
+	c.logger.Log(c.ctx, slog.LevelDebug, msg, args...)
+}
+
+func (c *CustomLogger) Info(msg string, args ...any) {
+	c.logger.Log(c.ctx, slog.LevelInfo, msg, args...)
 }

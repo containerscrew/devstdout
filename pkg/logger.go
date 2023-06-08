@@ -2,9 +2,10 @@ package logger
 
 import (
 	"context"
-	"golang.org/x/exp/slog"
 	"os"
 	"strings"
+
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -53,6 +54,8 @@ func getLevel(l string) slog.Level {
 		return slog.LevelWarn
 	case "TRACE":
 		return LevelTrace
+	case "DEBUG":
+		return slog.LevelDebug
 	default:
 		return slog.LevelInfo
 	}
@@ -86,7 +89,10 @@ func NewLogger(options OptionsLogger) *CustomLogger {
 		c.logger = slog.New(slog.NewTextHandler(os.Stdout, c.opts))
 	case "pretty":
 		c.logger = slog.New(newPrettyHandler(os.Stdout, c.opts))
+	case "json":
+		c.logger = slog.New(slog.NewJSONHandler(os.Stdout, c.opts))
 	default:
+		// Default logger always json
 		c.logger = slog.New(slog.NewJSONHandler(os.Stdout, c.opts))
 	}
 
@@ -103,4 +109,8 @@ func (c *CustomLogger) Debug(msg string, args ...any) {
 
 func (c *CustomLogger) Info(msg string, args ...any) {
 	c.logger.Log(c.ctx, slog.LevelInfo, msg, args...)
+}
+
+func (c *CustomLogger) Warning(msg string, args ...any) {
+	c.logger.Log(c.ctx, slog.LevelWarn, msg, args...)
 }

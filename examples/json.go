@@ -1,17 +1,10 @@
 package main
 
-import (
-	"github.com/containerscrew/devstdout/logger"
-)
+import logger "github.com/containerscrew/devstdout/pkg"
 
 func main() {
 	log := logger.NewLogger(
-		logger.OptionsLogger{Level: "info", AddSource: false, LoggerType: "pretty"},
-	)
-
-	log.Debug(
-		"executing database query",
-		logger.PrintMessage("query", "Debug message"),
+		logger.OptionsLogger{Level: "trace", AddSource: false, LoggerType: "json"},
 	)
 
 	log.Info(

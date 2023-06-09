@@ -114,3 +114,8 @@ func (c *CustomLogger) Info(msg string, args ...any) {
 func (c *CustomLogger) Warning(msg string, args ...any) {
 	c.logger.Log(c.ctx, slog.LevelWarn, msg, args...)
 }
+
+func (c *CustomLogger) Error(msg string, args ...any) {
+	c.logger.Log(c.ctx, slog.LevelError, msg, args...)
+	os.Exit(1)
+}

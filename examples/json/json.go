@@ -12,6 +12,8 @@ func main() {
 		logger.PrintMessage("image_id", "39ud88"),
 	)
 
+	log.Error("error message", logger.PrintMessage("image_id", "39ud88"))
+
 	log.Info(
 		"image upload successful",
 		logger.PrintMessage("process_id", 9876544),

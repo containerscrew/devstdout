@@ -6,23 +6,27 @@ import (
 
 func main() {
 	log := logger.NewLogger(
-		logger.OptionsLogger{Level: "warning", AddSource: false, LoggerType: "pretty"},
+		logger.OptionsLogger{Level: "debug", AddSource: false, LoggerType: "pretty"},
 	)
 
 	log.Debug(
 		"testing message",
-		logger.PrintMessage("test", "Debug test"),
+		logger.PrintMessage("hello", "world"),
 	)
 
 	log.Info(
 		"testing message",
-		logger.PrintMessage("test", "test"),
+		logger.PrintMessage("bob", "marley"),
 	)
 
 	log.Warning("warning message!")
 
 	log.Success(
 		"Success Message",
-		logger.PrintMessage("test", "test"),
+		logger.PrintMessage("alice", "bob"),
 	)
+
+	log.Error("error in your app!", logger.PrintMessage("error", "your_error_is_here"))
+
+	log.ErrorWithExit("fatal error, app must stop!", logger.PrintMessage("error", "your_error_is_here"))
 }

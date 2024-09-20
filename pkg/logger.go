@@ -66,6 +66,13 @@ func (c *CustomLogger) withOptions() {
 		Level:     getLevel(c.options.Level),
 		AddSource: c.options.AddSource,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+
+			// Replace msg key with message string
+			if a.Key == slog.MessageKey {
+				a.Key = "message"
+				return a
+			}
+
 			if a.Key == slog.LevelKey {
 				level := a.Value.Any().(slog.Level)
 				levelLabel, exists := LevelNames[level]
@@ -73,7 +80,7 @@ func (c *CustomLogger) withOptions() {
 					levelLabel = level.String()
 				}
 
-				a.Value = slog.StringValue(levelLabel)
+				a.Value = slog.StringValue(strings.ToLower(levelLabel))
 			}
 			return a
 		},
@@ -116,6 +123,10 @@ func (c *CustomLogger) Warning(msg string, args ...any) {
 }
 
 func (c *CustomLogger) Error(msg string, args ...any) {
+	c.logger.Log(c.ctx, slog.LevelError, msg, args...)
+}
+
+func (c *CustomLogger) ErrorWithExit(msg string, args ...any) {
 	c.logger.Log(c.ctx, slog.LevelError, msg, args...)
 	os.Exit(1)
 }

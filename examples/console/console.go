@@ -6,8 +6,10 @@ import (
 
 func main() {
 	log := logger.NewLogger(
-		logger.OptionsLogger{Level: "trace", AddSource: false, LoggerType: "console"},
+		logger.OptionsLogger{Level: "info", AddSource: false, LoggerType: "console"},
 	)
+
+	log.Info("hello, world!")
 
 	log.Debug(
 		"testing message",
@@ -21,6 +23,6 @@ func main() {
 
 	log.Success(
 		"Success Message",
-		logger.PrintMessage("test", "test"),
+		logger.PrintMessage("2", "test"),
 	)
 }

@@ -12,3 +12,6 @@ golangci-lint: ## Lint Golang code (brew install golangci-lint)
 
 pre-commit: ## Run pre-commit
 	pre-commit run -a
+
+test: ## Run tests
+	go test ./...

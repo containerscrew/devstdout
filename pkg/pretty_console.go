@@ -1,4 +1,4 @@
-package logger
+package devstdout
 
 import (
 	"context"
@@ -23,7 +23,7 @@ type PrettyHandler struct {
 func formatFields(fields map[string]interface{}) string {
 	var result string
 	for key, value := range fields {
-		result += fmt.Sprintf("%s=%v ", key, value) // %v allows printing any type of value
+		result += fmt.Sprintf("%s=%v ", key, value)
 	}
 	// Remove the extra trailing space
 	if len(result) > 0 {

@@ -10,6 +10,7 @@
     <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/containerscrew/devstdout">
     <img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/containerscrew/devstdout">
     <img alt="LICENSE" src="https://img.shields.io/github/license/containerscrew/devstdout">
+    <img alt="LICENSE" src="https://github.com/containerscrew/devstdout/actions/workflows/lint.yml/badge.svg">
 </p>
 
 <!-- START OF TOC !DO NOT EDIT THIS CONTENT MANUALLY-->

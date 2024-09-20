@@ -1,4 +1,5 @@
-name: Build 🛠️
+name: Lint 👀
+
 on:
   push:
     tags:

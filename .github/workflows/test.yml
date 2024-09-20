@@ -5,6 +5,7 @@ on:
     push:
       paths:
         - 'pkg/**'
+        - '.github/workflows/test.yml'
       branches:
         - '**'
 

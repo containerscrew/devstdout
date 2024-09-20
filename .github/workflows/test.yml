@@ -1,4 +1,4 @@
-name: Test 🧪
+name: Lint & Test 🧪
 
 on:
     pull_request:
@@ -7,8 +7,9 @@ on:
         - 'pkg/**'
       branches:
         - '**'
+
 jobs:
-  test:
+  lint-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,6 +22,11 @@ jobs:
 
       - name: Install dependencies
         run: go mod download
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.60
 
       - name: Build
         run: go build -v ./...

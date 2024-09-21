@@ -41,6 +41,8 @@ func PrintMessage[T LogMessageType](key string, value T) any {
 		return slog.Int(key, any(value).(int))
 	case string:
 		return slog.String(key, any(value).(string))
+	case uint64:
+		return slog.Uint64(key, any(value).(uint64))
 	default:
 		return nil
 	}

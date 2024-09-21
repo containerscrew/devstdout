@@ -32,7 +32,7 @@ var LevelNames = map[slog.Leveler]string{
 }
 
 type LogMessageType interface {
-	int | int64 | float64 | string
+	int | int64 | float64 | string | uint32 | uint64
 }
 
 func PrintMessage[T LogMessageType](key string, value T) any {

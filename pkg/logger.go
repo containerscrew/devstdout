@@ -35,7 +35,7 @@ type LogMessageType interface {
 	int | int64 | float64 | string | uint32 | uint64
 }
 
-func PrintMessage[T LogMessageType](key string, value T) any {
+func Argument[T LogMessageType](key string, value T) any {
 	switch any(value).(type) {
 	case int:
 		return slog.Int(key, any(value).(int))
@@ -70,10 +70,10 @@ func (c *CustomLogger) withOptions() {
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 
 			// Replace msg key with message string
-			if a.Key == slog.MessageKey {
-				a.Key = "message"
-				return a
-			}
+			// if a.Key == slog.MessageKey {
+			// 	a.Key = "message"
+			// 	return a
+			// }
 
 			if a.Key == slog.LevelKey {
 				level := a.Value.Any().(slog.Level)

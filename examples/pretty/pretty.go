@@ -1,32 +1,32 @@
 package main
 
 import (
-	logger "github.com/containerscrew/devstdout/pkg"
+	devstdout "github.com/containerscrew/devstdout/pkg"
 )
 
 func main() {
-	log := logger.NewLogger(
-		logger.OptionsLogger{Level: "debug", AddSource: false, LoggerType: "pretty"},
+	log := devstdout.NewLogger(
+		devstdout.OptionsLogger{Level: "debug", AddSource: false, LoggerType: "pretty"},
 	)
 
 	log.Debug(
 		"testing message",
-		logger.PrintMessage("hello", "world"),
+		devstdout.Argument("hello", "world"),
 	)
 
 	log.Info(
 		"testing message",
-		logger.PrintMessage("bob", "marley"),
+		devstdout.Argument("bob", "marley"),
 	)
 
 	log.Warning("warning message!")
 
 	log.Success(
 		"Success Message",
-		logger.PrintMessage("alice", "bob"),
+		devstdout.Argument("alice", "bob"),
 	)
 
-	log.Error("error in your app!", logger.PrintMessage("error", "your_error_is_here"))
+	log.Error("error in your app!", devstdout.Argument("error", "your_error_is_here"))
 
-	log.ErrorWithExit("fatal error, app must stop!", logger.PrintMessage("error", "your_error_is_here"))
+	log.ErrorWithExit("fatal error, app must stop!", devstdout.Argument("error", "your_error_is_here"))
 }

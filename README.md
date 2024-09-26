@@ -17,7 +17,7 @@
 **Table of Contents**  *generated with [mtoc](https://github.com/containerscrew/mtoc)*
 - [devstdout](#devstdout)
 - [Examples](#examples)
-  - [Code examples](#code-examples)
+  - [Full code examples](#full-code-examples)
   - [Pretty output](#pretty-output)
   - [Json output](#json-output)
 - [TO DO](#to-do)
@@ -30,7 +30,42 @@ Simple slog wrapper pkg for my Golang projects.
 
 # Examples
 
-## Code examples
+```go
+package main
+
+import (
+	devstdout "github.com/containerscrew/devstdout/pkg"
+)
+
+func main() {
+	log := devstdout.NewLogger(
+		devstdout.OptionsLogger{Level: "debug", AddSource: false, LoggerType: "pretty"},
+	)
+
+	log.Debug(
+		"testing message",
+		devstdout.Argument("hello", "world"),
+	)
+
+	log.Info(
+		"testing message",
+		devstdout.Argument("bob", "marley"),
+	)
+
+	log.Warning("warning message!")
+
+	log.Success(
+		"Success Message",
+		devstdout.Argument("alice", "bob"),
+	)
+
+	log.Error("error in your app!", devstdout.Argument("error", "your_error_is_here"))
+
+	log.ErrorWithExit("fatal error, app must stop!", devstdout.Argument("error", "your_error_is_here"))
+}
+```
+
+## Full code examples
 
 * [**json**](./examples/json/json.go)
 * [**pretty**](./examples/pretty/pretty.go)

@@ -15,3 +15,6 @@ pre-commit: ## Run pre-commit
 
 test: ## Run tests
 	go test ./...
+
+generate-changelog: ## Generate changelog using git cliff
+	git cliff --output CHANGELOG.md

@@ -1,0 +1,50 @@
+name: Changelog & Table of contents
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  push:
+    paths:
+      - 'src/**'
+    # tags:
+    #   - 'v*.*.*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  changelog-mtoc:
+    name: Generate CHANGELOG and table of contents
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install git cliff & mtoc
+        run: |
+          rustup default stable
+          cargo install git-cliff
+          cargo install mtoc
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set tag
+        id: set_tag
+        run: |
+          # Extract the tag name from the full reference
+          TAG_NAME=$(echo "${{ github.ref }}" | sed 's|.*/||')
+          echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
+
+      - name: Update CHANGELOG.md in main branch
+        run: |
+          git checkout main
+          git pull origin main
+          git config --global user.name 'containerscrew'
+          git config --global user.email 'containerscrew@users.noreply.github.com'
+          make generate-changelog
+          make mtoc
+          git add --all
+          git commit -m "Update CHANGELOG.md & table of contents"
+          git push origin main

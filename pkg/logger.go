@@ -31,22 +31,26 @@ var LevelNames = map[slog.Leveler]string{
 	LevelSuccess: "SUCCESS",
 }
 
-type LogMessageType interface {
-	int | int64 | float64 | string | uint32 | uint64
+func Argument[T any](key string, value T) any {
+	return slog.Any(key, value)
 }
 
-func Argument[T LogMessageType](key string, value T) any {
-	switch any(value).(type) {
-	case int:
-		return slog.Int(key, any(value).(int))
-	case string:
-		return slog.String(key, any(value).(string))
-	case uint64:
-		return slog.Uint64(key, any(value).(uint64))
-	default:
-		return nil
-	}
-}
+// type LogMessageType interface {
+// 	int | int64 | float64 | string | uint32 | uint64
+// }
+
+// func Argument[T LogMessageType](key string, value T) any {
+// 	switch any(value).(type) {
+// 	case int:
+// 		return slog.Int(key, any(value).(int))
+// 	case string:
+// 		return slog.String(key, any(value).(string))
+// 	case uint64:
+// 		return slog.Uint64(key, any(value).(uint64))
+// 	default:
+// 		return nil
+// 	}
+// }
 
 func getLevel(l string) slog.Level {
 	switch strings.ToUpper(l) {

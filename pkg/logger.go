@@ -74,10 +74,10 @@ func (c *CustomLogger) withOptions() {
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 
 			// Replace msg key with message string
-			// if a.Key == slog.MessageKey {
-			// 	a.Key = "message"
-			// 	return a
-			// }
+			if a.Key == slog.TimeKey {
+				a.Key = "ts"
+				return a
+			}
 
 			if a.Key == slog.LevelKey {
 				level := a.Value.Any().(slog.Level)

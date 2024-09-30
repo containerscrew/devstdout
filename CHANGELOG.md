@@ -1,7 +1,7 @@
 <!-- START OF TOC !DO NOT EDIT THIS CONTENT MANUALLY-->
 **Table of Contents**  *generated with [mtoc](https://github.com/containerscrew/mtoc)*
 - [Changelog](#changelog)
-  - [[unreleased]](#[unreleased])
+  - [[0.3.0] - 2024-09-30](#[0.3.0]---2024-09-30)
   - [[0.2.0] - 2024-09-28](#[0.2.0]---2024-09-28)
   - [[0.1.0] - 2024-09-26](#[0.1.0]---2024-09-26)
 <!-- END OF TOC -->
@@ -9,9 +9,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.3.0] - 2024-09-30
 
 - Update CHANGELOG.md
+
+- Update CHANGELOG.md & table of contents
+
+- Replace timestamp log key
 
 ## [0.2.0] - 2024-09-28
 

@@ -1,6 +1,7 @@
 <!-- START OF TOC !DO NOT EDIT THIS CONTENT MANUALLY-->
 **Table of Contents**  *generated with [mtoc](https://github.com/containerscrew/mtoc)*
 - [Changelog](#changelog)
+  - [[0.3.2] - 2025-01-30](#032---2025-01-30)
   - [[0.3.1] - 2025-01-30](#031---2025-01-30)
   - [[0.3.0] - 2024-09-30](#030---2024-09-30)
   - [[0.2.0] - 2024-09-28](#020---2024-09-28)
@@ -9,6 +10,12 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [0.3.2] - 2025-01-30
+
+- Update CHANGELOG.md & table of contents
+
+- Fix: prettyHandler log order
 
 ## [0.3.1] - 2025-01-30
 

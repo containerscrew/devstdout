@@ -1,13 +1,39 @@
 <!-- START OF TOC !DO NOT EDIT THIS CONTENT MANUALLY-->
 **Table of Contents**  *generated with [mtoc](https://github.com/containerscrew/mtoc)*
 - [Changelog](#changelog)
-  - [[0.3.0] - 2024-09-30](#[0.3.0]---2024-09-30)
-  - [[0.2.0] - 2024-09-28](#[0.2.0]---2024-09-28)
-  - [[0.1.0] - 2024-09-26](#[0.1.0]---2024-09-26)
+  - [[0.3.1] - 2025-01-30](#031---2025-01-30)
+  - [[0.3.0] - 2024-09-30](#030---2024-09-30)
+  - [[0.2.0] - 2024-09-28](#020---2024-09-28)
+  - [[0.1.0] - 2024-09-26](#010---2024-09-26)
 <!-- END OF TOC -->
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [0.3.1] - 2025-01-30
+
+- Update CHANGELOG.md & table of contents
+
+- Bump github.com/fatih/color from 1.17.0 to 1.18.0
+
+Bumps [github.com/fatih/color](https://github.com/fatih/color) from 1.17.0 to 1.18.0.
+- [Release notes](https://github.com/fatih/color/releases)
+- [Commits](https://github.com/fatih/color/compare/v1.17.0...v1.18.0)
+
+---
+updated-dependencies:
+- dependency-name: github.com/fatih/color
+  dependency-type: direct:production
+  update-type: version-update:semver-minor
+...
+
+Signed-off-by: dependabot[bot] <support@github.com>
+
+- Merge pull request #5 from containerscrew/dependabot/go_modules/github.com/fatih/color-1.18.0
+
+Bump github.com/fatih/color from 1.17.0 to 1.18.0
+
+- Add mutex for prettyHandler
 
 ## [0.3.0] - 2024-09-30
 

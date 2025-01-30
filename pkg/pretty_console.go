@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
+	"os"
 	"sync"
 
 	"github.com/fatih/color"
@@ -17,17 +17,16 @@ type PrettyHandlerOptions struct {
 
 type PrettyHandler struct {
 	slog.Handler
-	mu *sync.Mutex  // Mutex to ensure thread-safety
-	l  *log.Logger  // Custom logger
+	mu sync.Mutex // Mutex for thread-safe logging
 }
 
-// Function to convert the map into a "key=value" formatted string
+// Convert map fields into a formatted string "key=value"
 func formatFields(fields map[string]interface{}) string {
 	var result string
 	for key, value := range fields {
 		result += fmt.Sprintf("%s=%v ", key, value)
 	}
-	// Remove the extra trailing space
+	// Trim trailing space
 	if len(result) > 0 {
 		result = result[:len(result)-1]
 	}
@@ -35,12 +34,12 @@ func formatFields(fields map[string]interface{}) string {
 }
 
 func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
-	h.mu.Lock()         // Lock to ensure thread-safe writing
+	h.mu.Lock()         // Lock to ensure thread-safe logging
 	defer h.mu.Unlock() // Unlock when done
 
 	level := r.Level.String()
 
-	// Apply color based on log level
+	// Apply color formatting based on log level
 	switch r.Level {
 	case slog.LevelDebug:
 		level = color.MagentaString(level)
@@ -54,22 +53,25 @@ func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
 		level = color.GreenString(LevelNames[LevelSuccess])
 	}
 
-	// Collect attributes from the log record into a map
+	// Collect attributes into a map
 	fields := make(map[string]interface{}, r.NumAttrs())
 	r.Attrs(func(a slog.Attr) bool {
 		fields[a.Key] = a.Value.Any()
 		return true
 	})
 
-	// Format time for logging
+	// Format timestamp
 	timeStr := r.Time.Format("[2006-01-02 15:05:05]")
 	msg := color.CyanString(r.Message)
 
-	// Use the function to format the map as "key=value"
+	// Format fields as key=value
 	formattedFields := formatFields(fields)
 
-	// Use fmt.Printf for formatted output, it provides better control over the format
+	// Print log entry using fmt.Printf (directly writing to stdout)
 	fmt.Printf("%s %s %s %s\n", timeStr, level, msg, color.WhiteString(formattedFields))
+
+	// Force flush stdout to prevent logs from being out of order
+	os.Stdout.Sync()
 
 	return nil
 }
@@ -78,7 +80,5 @@ func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
 func newPrettyHandler(out io.Writer, opts *slog.HandlerOptions) *PrettyHandler {
 	return &PrettyHandler{
 		Handler: slog.NewTextHandler(out, opts),
-		mu:      &sync.Mutex{},
-		l:       log.New(out, "", 0),
 	}
 }
